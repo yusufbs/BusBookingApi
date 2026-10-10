@@ -25,11 +25,21 @@ public sealed class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieve all registered users. Restricted to Admin and Manager roles.
+    /// </summary>
+    [HttpGet("GetAllUsers")]
+    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Manager}")]
+    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<UserDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllUsers(CancellationToken ct)
+    {
+        var response = await _sender.Send(new GetAllUsersQuery(), ct);
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Authenticate credentials and return a signed JWT token along with user details.
     /// </summary>
     [HttpPost("login")]
-    [HttpPost("/api/BusBooking/login")]
-    [HttpPost("/api/v{version:apiVersion}/BusBooking/login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginUserDto model, CancellationToken ct)
@@ -41,10 +51,7 @@ public sealed class AuthController : ControllerBase
     /// <summary>
     /// Register a new user account.
     /// </summary>
-    [HttpPost("register")]
     [HttpPost("AddNewUser")]
-    [HttpPost("/api/BusBooking/AddNewUser")]
-    [HttpPost("/api/v{version:apiVersion}/BusBooking/AddNewUser")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddNewUser([FromBody] UserDto model, CancellationToken ct)
@@ -54,27 +61,9 @@ public sealed class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieve all registered users. Restricted to Admin and Manager roles.
-    /// </summary>
-    [HttpGet("users")]
-    [HttpGet("GetAllUsers")]
-    [HttpGet("/api/BusBooking/GetAllUsers")]
-    [HttpGet("/api/v{version:apiVersion}/BusBooking/GetAllUsers")]
-    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Manager}")]
-    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<UserDto>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllUsers(CancellationToken ct)
-    {
-        var response = await _sender.Send(new GetAllUsersQuery(), ct);
-        return Ok(response);
-    }
-
-    /// <summary>
     /// Update existing user account details. Requires authorization.
     /// </summary>
-    [HttpPut("users")]
     [HttpPost("UpdateUser")]
-    [HttpPost("/api/BusBooking/UpdateUser")]
-    [HttpPost("/api/v{version:apiVersion}/BusBooking/UpdateUser")]
     [Authorize]
     [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateUser([FromBody] UserDto model, CancellationToken ct)
@@ -86,10 +75,7 @@ public sealed class AuthController : ControllerBase
     /// <summary>
     /// Delete user account by UserId. Restricted to Admin role.
     /// </summary>
-    [HttpDelete("users")]
     [HttpDelete("DeleteUserByUserId")]
-    [HttpDelete("/api/BusBooking/DeleteUserByUserId")]
-    [HttpDelete("/api/v{version:apiVersion}/BusBooking/DeleteUserByUserId")]
     [Authorize(Roles = UserRole.Admin)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteUserByUserId([FromQuery] int userId, CancellationToken ct)
