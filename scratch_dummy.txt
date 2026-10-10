@@ -1,0 +1,3 @@
+import clr_loader
+import pythonnet
+# or simply use dotnet build on a test snippet
