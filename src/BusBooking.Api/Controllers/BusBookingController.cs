@@ -7,7 +7,6 @@ using BusBooking.Application.Features.Bookings.Queries;
 using BusBooking.Application.Features.Locations;
 using BusBooking.Application.Features.Schedules;
 using BusBooking.Application.Features.Schedules.Queries;
-using BusBooking.Application.Features.Users;
 using BusBooking.Application.Features.Vendors;
 using BusBooking.Domain.Enums;
 using MediatR;
@@ -32,56 +31,7 @@ public sealed class BusBookingController : ControllerBase
     }
 
     // ==========================================
-    // 1. Users & Authentication
-    // ==========================================
-
-    [HttpGet("GetAllUsers")]
-    [Authorize(Roles = $"{UserRole.Admin},{UserRole.Manager}")]
-    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<UserDto>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllUsers(CancellationToken ct)
-    {
-        var response = await _sender.Send(new GetAllUsersQuery(), ct);
-        return Ok(response);
-    }
-
-    [HttpPost("login")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Login([FromBody] LoginUserDto model, CancellationToken ct)
-    {
-        var response = await _sender.Send(new LoginUserCommand(model.UserName, model.Password), ct);
-        return Ok(response);
-    }
-
-    [HttpPost("AddNewUser")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddNewUser([FromBody] UserDto model, CancellationToken ct)
-    {
-        var response = await _sender.Send(new AddNewUserCommand(model), ct);
-        return Ok(response);
-    }
-
-    [HttpPost("UpdateUser")]
-    [Authorize]
-    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateUser([FromBody] UserDto model, CancellationToken ct)
-    {
-        var response = await _sender.Send(new UpdateUserCommand(model), ct);
-        return Ok(response);
-    }
-
-    [HttpDelete("DeleteUserByUserId")]
-    [Authorize(Roles = UserRole.Admin)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteUserByUserId([FromQuery] int userId, CancellationToken ct)
-    {
-        var response = await _sender.Send(new DeleteUserCommand(userId), ct);
-        return Ok(response);
-    }
-
-    // ==========================================
-    // 2. Bus Vendors
+    // 1. Bus Vendors
     // ==========================================
 
     [HttpGet("GetBusVendors")]

@@ -1,0 +1,104 @@
+## ==============================================================================
+## .NET / C# Visual Studio & VS Code .gitignore
+## ==============================================================================
+
+## Build results & binaries
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]emp/
+build/
+
+## Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.pidb
+*.booproj
+*.svclog
+*.cache
+*.opendb
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+
+## Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+*.code-workspace
+
+## JetBrains Rider / Resharper
+.idea/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## User-specific settings & local secrets
+*.local.json
+appsettings*.local.json
+appsettings.*.local.json
+secrets.json
+*.secrets.json
+.env
+.env.*
+!.env.example
+
+## Unit test and code coverage results
+TestResults/
+[Tt]est[Rr]esult*/
+*.coverage
+*.coveragexml
+coverage/
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.assets.json
+
+## SQL Server and LocalDB files
+*.mdf
+*.ldf
+*.ndf
+
+## Microsoft Azure / Publish outputs
+*.azurePubxml
+*.pubxml
+*.publishproj
+publish/
+
+## Crash dumps and memory profiling
+*.dmp
+*.mdmp
+*.crash
+
+## OS generated files
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
