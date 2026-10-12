@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BusBooking Web API (.NET 10 &amp; SQL Server) — New Employee Onboarding, Architecture &amp; Local Setup Guide</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.55;
+      font-size: 10.5pt;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .cover {
+      border: 2px solid #1e3a8a;
+      border-radius: 10px;
+      padding: 36px 32px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      margin-bottom: 24px;
+    }
+    .cover .badge {
+      display: inline-block;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .cover h1 {
+      font-size: 22pt;
+      margin: 0 0 10px 0;
+      color: #ffffff;
+      line-height: 1.25;
+      border: none;
+    }
+    .cover p.subtitle {
+      font-size: 11.5pt;
+      color: #cbd5e1;
+      margin: 0 0 18px 0;
+    }
+    .cover .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 14px;
+      font-size: 9.5pt;
+      color: #e2e8f0;
+    }
+    h1, h2, h3, h4 {
+      color: #0f172a;
+      page-break-after: avoid;
+    }
+    h2 {
+      font-size: 15pt;
+      border-bottom: 2px solid #1e3a8a;
+      padding-bottom: 5px;
+      margin-top: 26px;
+      margin-bottom: 12px;
+      color: #1e3a8a;
+    }
+    h3 {
+      font-size: 12pt;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    h4 {
+      font-size: 10.5pt;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    p {
+      margin: 6px 0 10px 0;
+    }
+    ul, ol {
+      margin: 6px 0 12px 0;
+      padding-left: 22px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    code {
+      font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+      font-size: 9pt;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+    pre {
+      font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+      font-size: 8.8pt;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 8px 0 14px 0;
+      page-break-inside: avoid;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+    }
+    blockquote, .callout {
+      border-left: 4px solid #2563eb;
+      background: #eff6ff;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      margin: 10px 0 14px 0;
+      page-break-inside: avoid;
+    }
+    .callout.warn {
+      border-left-color: #d97706;
+      background: #fffbeb;
+    }
+    .callout.success {
+      border-left-color: #059669;
+      background: #ecfdf5;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px 0;
+      font-size: 9.2pt;
+      page-break-inside: auto;
+    }
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #1e3a8a;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    .toc {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin-bottom: 22px;
+    }
+    .toc h3 {
+      margin-top: 0;
+      color: #1e3a8a;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .pill {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 4px;
+      font-size: 8pt;
+      font-weight: 700;
+      font-family: Consolas, monospace;
+    }
+    .pill.get { background: #dbeafe; color: #1d4ed8; }
+    .pill.post { background: #dcfce7; color: #15803d; }
+    .pill.put { background: #fef3c7; color: #b45309; }
+    .pill.delete { background: #fee2e2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+
+  <!-- COVER HEADER -->
+  <div class="cover">
+    <div class="badge">Engineering Onboarding &amp; Architecture Manual</div>
+    <h1>BusBooking Web API (.NET 10 &amp; SQL Server)</h1>
+    <p class="subtitle">Complete Specification Prompt, Conversation History, Clean Architecture Guide &amp; Local Machine Setup Instructions</p>
+    <div class="meta-grid">
+      <div><strong>Solution Path:</strong> C:\Projects\BusBookingApi\BusBooking.slnx</div>
+      <div><strong>Target Framework:</strong> .NET 10.0 / C# 14</div>
+      <div><strong>Database Engine:</strong> Microsoft SQL Server (BusBookingDb)</div>
+      <div><strong>Security Model:</strong> JWT Bearer + RBAC (Admin, Manager, Associate)</div>
+    </div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><strong>Section 1: The Complete Original Prompts &amp; Conversation Evolution</strong>
+        <ul>
+          <li>1.1 Initial User Request Prompt</li>
+          <li>1.2 The Complete Architectural Master Prompt (Verbatim)</li>
+          <li>1.3 Chronological Evolution &amp; Engineering Refinements During Session</li>
+        </ul>
+      </li>
+      <li><strong>Section 2: Detailed Explanation of What the Application Does</strong>
+        <ul>
+          <li>2.1 Business Purpose &amp; Core Functional Flows</li>
+          <li>2.2 Clean Architecture Layer Breakdown (4 Projects)</li>
+          <li>2.3 Database Schema, Covering Indexes &amp; Concurrency-Safe Indexed View</li>
+          <li>2.4 Enterprise Non-Functional Capabilities (NFRs)</li>
+          <li>2.5 Complete API Endpoints &amp; Role-Based Authorization (RBAC) Matrix</li>
+        </ul>
+      </li>
+      <li><strong>Section 3: Step-by-Step Instructions to Run the Application Locally</strong>
+        <ul>
+          <li>3.1 Machine Prerequisites</li>
+          <li>3.2 Step 1 — Navigate to the Workspace</li>
+          <li>3.3 Step 2 — Configure Connection String &amp; JWT Settings</li>
+          <li>3.4 Step 3 — Initialize &amp; Seed the SQL Server Database</li>
+          <li>3.5 Step 4 — Build &amp; Run the Application</li>
+          <li>3.6 Step 5 — Using Swagger UI &amp; Default Seeded Role Credentials</li>
+          <li>3.7 Step 6 — Running the Automated PowerShell Verification Suite</li>
+          <li>3.8 Step 7 — Troubleshooting Guide for New Engineers</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- SECTION 1 -->
+  <!-- ====================================================================== -->
+  <h2>Section 1: The Complete Original Prompts &amp; Conversation Evolution</h2>
+
+  <h3>1.1 Initial User Request Prompt</h3>
+  <blockquote>
+    "create a prompt which will help me build a web api in dotnet 10 and sql server database with all the best practices and highly performant. this is a bus booking api and the details can be found at the site https://freeprojectapi.com/apis/bus-booking, the end points should look like this and accordingly the db tables should be created, this application should have health checks + matrics, observability, rate limiting, api versioning, proper logging, caching, feature management, exception handling management, resilience"
+  </blockquote>
+
+  <h3>1.2 The Complete Architectural Master Prompt (Verbatim)</h3>
+  <p>Below is the complete Master Prompt generated from the initial request and executed across Steps 1–4 to build the solution:</p>
+
+  <div class="callout">
+    <strong>Role &amp; Objective:</strong> You are a Principal .NET Solutions Architect and High-Performance Systems Engineer. Your task is to design and implement a production-ready, ultra-low latency, and resilient Bus Ticket Booking Web API built with <strong>.NET 10</strong> and <strong>Microsoft SQL Server</strong>.<br/><br/>
+    The business domain and contract specifications mirror the public API contract from FreeProjectAPI (<code>https://freeprojectapi.com/apis/bus-booking</code>). You must build the system using <strong>Clean Architecture</strong>, modern C# 14 idioms, zero-allocation best practices, and enterprise non-functional requirements (Observability, Resilience, Caching, Rate Limiting, Versioning, Feature Management, and Health Checks).
+  </div>
+
+  <h4>1. Technology Stack &amp; Key Libraries</h4>
+  <ul>
+    <li><strong>Runtime &amp; Language:</strong> .NET 10 / C# 14</li>
+    <li><strong>Database:</strong> Microsoft SQL Server 2022+</li>
+    <li><strong>Data Access:</strong>
+      <ul>
+        <li><strong>Entity Framework Core 10</strong> for Domain writes, migrations, relationships, and transactional consistency.</li>
+        <li><strong>Dapper / Compiled No-Tracking Queries</strong> for high-throughput read paths (e.g., bus search and route exploration).</li>
+      </ul>
+    </li>
+    <li><strong>Caching:</strong> .NET <code>HybridCache</code> (L1 In-Memory + L2 Distributed Redis) with tag-based cache eviction.</li>
+    <li><strong>Resilience:</strong> Polly v8 via <code>Microsoft.Extensions.Resilience</code> (Retry, Circuit Breaker, Timeout, Rate Limiter).</li>
+    <li><strong>Observability:</strong>
+      <ul>
+        <li>OpenTelemetry (<code>OpenTelemetry.Extensions.Hosting</code>, ASP.NET Core, HttpClient, EF Core instrumentation, OTLP Exporter).</li>
+        <li>Custom <code>System.Diagnostics.Metrics.Meter</code> for booking KPIs.</li>
+        <li>Serilog with structured logging and OpenTelemetry trace/span correlation.</li>
+      </ul>
+    </li>
+    <li><strong>Health Checks:</strong> <code>AspNetCore.HealthChecks.SqlServer</code>, custom readiness/liveness probes (<code>/health/live</code>, <code>/health/ready</code>).</li>
+    <li><strong>Rate Limiting:</strong> <code>Microsoft.AspNetCore.RateLimiting</code> (Fixed Window, Sliding Window, Token Bucket).</li>
+    <li><strong>API Versioning:</strong> <code>Asp.Versioning.Http</code> and <code>Asp.Versioning.Mvc.ApiExplorer</code> (supporting <code>/api/v{version:apiVersion}/...</code> with backward-compatible fallback).</li>
+    <li><strong>Feature Management:</strong> <code>Microsoft.FeatureManagement.AspNetCore</code>.</li>
+    <li><strong>Exception Handling:</strong> Global <code>IExceptionHandler</code> producing standard RFC 7807 <code>ProblemDetails</code>.</li>
+    <li><strong>Authentication &amp; Security:</strong> ASP.NET Core JWT Bearer authentication, Refresh Tokens, BCrypt password hashing, and Role-Based Authorization (<code>Admin</code>, <code>Manager</code>, <code>Associate</code>).</li>
+  </ul>
+
+  <h4>2. Relational Database Schema &amp; Data Modeling</h4>
+  <ol>
+    <li><strong><code>Users</code></strong>: <code>UserId</code> (INT, IDENTITY, PK), <code>UserName</code> (NVARCHAR(100), UNIQUE, NOT NULL), <code>EmailId</code> (NVARCHAR(150), UNIQUE, NOT NULL), <code>FullName</code> (NVARCHAR(150), NOT NULL), <code>Role</code> (NVARCHAR(50), NOT NULL), <code>PasswordHash</code> (NVARCHAR(255), NOT NULL), <code>PasswordSalt</code> (NVARCHAR(255), NOT NULL), <code>CreatedDate</code> (DATETIMEOFFSET, NOT NULL, DEFAULT SYSUTCDATETIME()), <code>RefreshToken</code> (NVARCHAR(255), NULL), <code>RefreshTokenExpiryTime</code> (DATETIMEOFFSET, NULL), <code>RowVersion</code> (ROWVERSION / Concurrency Token).</li>
+    <li><strong><code>BusVendors</code></strong>: <code>VendorId</code> (INT, IDENTITY, PK), <code>VendorName</code> (NVARCHAR(150), NOT NULL), <code>ContactNo</code> (VARCHAR(20), NOT NULL), <code>EmailId</code> (NVARCHAR(150), NOT NULL), <code>IsActive</code> (BIT, NOT NULL, DEFAULT 1).</li>
+    <li><strong><code>BusLocations</code></strong>: <code>LocationId</code> (INT, IDENTITY, PK), <code>LocationName</code> (NVARCHAR(100), NOT NULL), <code>Code</code> (VARCHAR(10), NOT NULL, UNIQUE).</li>
+    <li><strong><code>BusAddressLocations</code></strong>: <code>LocationPointId</code> (INT, IDENTITY, PK), <code>LocationId</code> (INT, FK -&gt; BusLocations.LocationId, ON DELETE CASCADE), <code>LocationTitle</code> (NVARCHAR(150), NOT NULL), <code>LocationAddress</code> (NVARCHAR(500), NOT NULL).</li>
+    <li><strong><code>BusSchedules</code></strong>: <code>ScheduleId</code> (INT, IDENTITY, PK), <code>VendorId</code> (INT, FK -&gt; BusVendors.VendorId), <code>BusName</code> (NVARCHAR(100), NOT NULL), <code>BusVehicleNo</code> (VARCHAR(50), NOT NULL), <code>FromLocation</code> (INT, FK -&gt; BusLocations.LocationId), <code>ToLocation</code> (INT, FK -&gt; BusLocations.LocationId), <code>DepartureTime</code> (TIME, NOT NULL), <code>ArrivalTime</code> (TIME, NOT NULL), <code>ScheduleDate</code> (DATE, NOT NULL), <code>Price</code> (DECIMAL(18,2), NOT NULL), <code>TotalSeats</code> (INT, NOT NULL), <code>RowVersion</code> (ROWVERSION).</li>
+    <li><strong><code>BusBookings</code></strong>: <code>BookingId</code> (INT, IDENTITY, PK), <code>CustId</code> (INT, FK -&gt; Users.UserId), <code>ScheduleId</code> (INT, FK -&gt; BusSchedules.ScheduleId), <code>BookingDate</code> (DATETIMEOFFSET, NOT NULL, DEFAULT SYSUTCDATETIME()), <code>TotalAmount</code> (DECIMAL(18,2), NOT NULL), <code>BookingStatus</code> (NVARCHAR(30), DEFAULT 'Confirmed').</li>
+    <li><strong><code>BusBookingPassengers</code></strong>: <code>PassengerId</code> (INT, IDENTITY, PK), <code>BookingId</code> (INT, FK -&gt; BusBookings.BookingId, ON DELETE CASCADE), <code>PassengerName</code> (NVARCHAR(150), NOT NULL), <code>Age</code> (INT, NOT NULL), <code>Gender</code> (VARCHAR(10), NOT NULL), <code>SeatNo</code> (INT, NOT NULL).</li>
+  </ol>
+
+  <h4>3. Critical Constraints &amp; Performance Indexes</h4>
+  <ul>
+    <li><strong>Seat Conflict Prevention:</strong> Schema-bound indexed view <code>dbo.vw_ActiveScheduleSeats</code> with <code>UNIQUE CLUSTERED INDEX IX_vw_ActiveScheduleSeats_Schedule_Seat ON dbo.vw_ActiveScheduleSeats(ScheduleId, SeatNo)</code> plus atomic <code>SERIALIZABLE</code> transaction checks so two concurrent users cannot book the same seat on the same schedule.</li>
+    <li><strong>Search Covering Index:</strong> <code>CREATE NONCLUSTERED INDEX IX_BusSchedules_Search ON BusSchedules(FromLocation, ToLocation, ScheduleDate) INCLUDE (ScheduleId, VendorId, BusName, BusVehicleNo, DepartureTime, ArrivalTime, Price, TotalSeats);</code></li>
+    <li><strong>Booked Seats Lookup Index:</strong> <code>CREATE NONCLUSTERED INDEX IX_BusBookings_Schedule_Status ON BusBookings(ScheduleId, BookingStatus) INCLUDE (BookingId, CustId, BookingDate);</code></li>
+  </ul>
+
+  <h4>4. Step-by-Step Execution Plan Used to Build the System</h4>
+  <ol>
+    <li><strong>Step 1 — Domain &amp; Database:</strong> Generated the EF Core 10 entities, <code>BusBookingDbContext</code>, Fluent configurations, initial migration, and SQL Server DDL script with covering indexes and the concurrency-safe indexed view.</li>
+    <li><strong>Step 2 — Core Booking &amp; Search Logic:</strong> Implemented CQRS handlers via MediatR, high-throughput Dapper queries (<code>SearchBusQuery</code>, <code>GetAvailableRoutesQuery</code>, <code>GetBookedSeatsQuery</code>), <code>HybridCache</code> caching, and atomic <code>CreateBusBookingCommand</code>.</li>
+    <li><strong>Step 3 — API Endpoints &amp; Contracts:</strong> Created the controllers, DTOs, and request validators, and moved the workspace to <code>C:\Projects\BusBookingApi</code>.</li>
+    <li><strong>Step 4 — Enterprise NFR Integration:</strong> Wired <code>Program.cs</code> with Serilog, OpenTelemetry metrics/tracing, Polly v8 resilience pipelines, rate limiters, API versioning, feature flags, health checks, and <code>GlobalExceptionHandler</code>.</li>
+  </ol>
+
+  <h3>1.3 Chronological Evolution &amp; Engineering Refinements During Session</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>User Request / Requirement</th>
+        <th>Engineering Solution Implemented</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Workspace Relocation</strong></td>
+        <td>Move <code>BusBookingApi</code> to <code>C:\Projects</code> and update all references.</td>
+        <td>Moved solution to <code>C:\Projects\BusBookingApi</code>, verified <code>BusBooking.slnx</code> project paths and SQL scripts.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Swagger UI</strong></td>
+        <td>Enable Swagger UI to view and test endpoints in the browser.</td>
+        <td>Configured <code>Swashbuckle.AspNetCore</code> v10 in <code>Program.cs</code> with root redirect (<code>/</code> -&gt; <code>/swagger</code>).</td>
+      </tr>
+      <tr>
+        <td><strong>3. Authentication &amp; RBAC</strong></td>
+        <td>Implement JWT authentication and role-based authorization for roles: <code>Admin</code>, <code>Manager</code>, <code>Associate</code>.</td>
+        <td>Implemented <code>JwtTokenService</code>, configured <code>AddJwtBearer</code>, added RBAC policies, and seeded default accounts (<code>admin</code>, <code>manager</code>, <code>associate</code>).</td>
+      </tr>
+      <tr>
+        <td><strong>4. Dedicated AuthController</strong></td>
+        <td>Move all authentication and user authorization endpoints out of <code>BusBookingController</code> into a dedicated controller.</td>
+        <td>Created <code>AuthController</code> (<code>/api/Auth/...</code>) for <code>GetAllUsers</code>, <code>login</code>, <code>AddNewUser</code>, <code>UpdateUser</code>, and <code>DeleteUserByUserId</code>; removed them completely from <code>BusBookingController</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>5. Git Hygiene &amp; Script Reliability</strong></td>
+        <td>Add a comprehensive <code>.gitignore</code> and fix PowerShell script timeouts.</td>
+        <td>Added root <code>.gitignore</code>, untracked <code>bin/</code> and <code>obj/</code>, added <code>-UseBasicParsing</code> and redirected stdio in PowerShell test scripts.</td>
+      </tr>
+      <tr>
+        <td><strong>6. Swagger Bearer Fix</strong></td>
+        <td>Fix <code>401 Unauthorized</code> when authorizing with Bearer token in Swagger UI.</td>
+        <td>Passed <code>document</code> into <code>new OpenApiSecuritySchemeReference("Bearer", document)</code> so <code>swagger.json</code> emits the security requirement, and added <code>JwtBearerEvents.OnMessageReceived</code> to accept both <code>&lt;token&gt;</code> and <code>Bearer &lt;token&gt;</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ====================================================================== -->
+  <!-- SECTION 2 -->
+  <!-- ====================================================================== -->
+  <h2>Section 2: Detailed Explanation of What the Application Does</h2>
+
+  <h3>2.1 Business Purpose &amp; Core Functional Flows</h3>
+  <p><strong>BusBookingApi</strong> is a high-throughput backend Web API that powers an intercity bus ticket reservation system. It supports five core functional workflows:</p>
+  <ol>
+    <li><strong>Authentication &amp; User Lifecycle (<code>AuthController</code>):</strong> Users register accounts with passwords hashed via BCrypt (cost factor 12) and log in to receive a signed HMAC-SHA256 JWT Bearer token (120-minute expiry) plus a 7-day refresh token. Administrators and Managers can audit user accounts, and Administrators can remove accounts.</li>
+    <li><strong>Bus Vendor Management (<code>BusBookingController</code>):</strong> Manages bus operator companies (e.g., <em>Greyhound Express</em>, <em>MegaBus Lines</em>, <em>PeterPan Coach</em>), their contact numbers, email addresses, and active status.</li>
+    <li><strong>Locations &amp; Boarding/Drop-off Points (<code>BusBookingController</code>):</strong> Manages city terminals (<code>BusLocations</code> with unique station codes such as <code>NYC</code>, <code>BOS</code>, <code>DC</code>, <code>PHI</code>) and specific boarding/drop-off points (<code>BusAddressLocations</code>) within each city. Location queries are cached in <code>HybridCache</code> for 60 minutes.</li>
+    <li><strong>Schedule Publishing &amp; Fast Bus Search (<code>BusBookingController</code>):</strong> Operators publish schedules with origin, destination, travel date, departure/arrival times, price, and total seat capacity. Customers search routes via Dapper queries backed by SQL covering indexes and 2-minute <code>HybridCache</code> entries that dynamically compute <code>availableSeats = totalSeats - bookedSeats</code>.</li>
+    <li><strong>Atomic Seat Reservation &amp; Cancellation (<code>BusBookingController</code>):</strong> Customers book specific seat numbers for one or more passengers. The system prevents double-booking using both a <code>SERIALIZABLE</code> transaction in EF Core and a unique clustered index on the schema-bound view <code>dbo.vw_ActiveScheduleSeats</code>.</li>
+  </ol>
+
+  <h3>2.2 Clean Architecture Layer Breakdown (4 Projects)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Path</th>
+        <th>Responsibilities &amp; Key Components</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BusBooking.Domain</strong></td>
+        <td><code>src/BusBooking.Domain</code></td>
+        <td>Core enterprise entities (<code>User</code>, <code>BusVendor</code>, <code>BusLocation</code>, <code>BusAddressLocation</code>, <code>BusSchedule</code>, <code>BusBooking</code>, <code>BusBookingPassenger</code>) and domain constants (<code>UserRole</code>, <code>BookingStatus</code>). Zero external package dependencies.</td>
+      </tr>
+      <tr>
+        <td><strong>BusBooking.Application</strong></td>
+        <td><code>src/BusBooking.Application</code></td>
+        <td>CQRS commands/queries via <code>MediatR</code>, <code>FluentValidation</code> pipeline behavior (<code>ValidationBehavior</code>), DTOs, custom exceptions (<code>SeatAlreadyBookedException</code>, <code>NotFoundException</code>), and OpenTelemetry metrics (<code>BusBookingMetrics</code>).</td>
+      </tr>
+      <tr>
+        <td><strong>BusBooking.Infrastructure</strong></td>
+        <td><code>src/BusBooking.Infrastructure</code></td>
+        <td>Pooled EF Core 10 <code>BusBookingDbContext</code>, entity configurations, migrations, Dapper <code>SqlConnectionFactory</code>, <code>JwtTokenService</code>, and .NET 10 <code>HybridCache</code> registration.</td>
+      </tr>
+      <tr>
+        <td><strong>BusBooking.Api</strong></td>
+        <td><code>src/BusBooking.Api</code></td>
+        <td><code>AuthController</code>, <code>BusBookingController</code>, RFC 7807 <code>GlobalExceptionHandler</code>, JWT Bearer authentication, RBAC policies, Rate Limiting, Polly v8 resilience, OpenTelemetry, Serilog, Health Checks, and Swagger UI.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.3 Database Schema, Covering Indexes &amp; Concurrency-Safe Indexed View</h3>
+  <p>The SQL Server database <code>BusBookingDb</code> contains 7 relational tables and 1 schema-bound indexed view:</p>
+  <ul>
+    <li><strong><code>dbo.Users</code></strong> — Stores user credentials, BCrypt hashes/salts, roles (<code>Admin</code>, <code>Manager</code>, <code>Associate</code>, <code>Customer</code>), refresh tokens, and <code>RowVersion</code> concurrency token.</li>
+    <li><strong><code>dbo.BusVendors</code></strong> — Stores bus operator companies and <code>IsActive</code> status.</li>
+    <li><strong><code>dbo.BusLocations</code></strong> — Stores city terminals and unique station codes (<code>UQ_BusLocations_Code</code>).</li>
+    <li><strong><code>dbo.BusAddressLocations</code></strong> — Stores boarding/dropping landmarks linked to <code>BusLocations</code> (<code>ON DELETE CASCADE</code>).</li>
+    <li><strong><code>dbo.BusSchedules</code></strong> — Stores scheduled bus trips, pricing, seat counts, and covering index <code>IX_BusSchedules_Search</code>.</li>
+    <li><strong><code>dbo.BusBookings</code></strong> — Stores booking headers linked to customer and schedule with status (<code>Confirmed</code> / <code>Cancelled</code>).</li>
+    <li><strong><code>dbo.BusBookingPassengers</code></strong> — Stores individual passenger records and assigned seat numbers (<code>SeatNo</code>).</li>
+    <li><strong><code>dbo.vw_ActiveScheduleSeats</code> (Indexed View)</strong> — Schema-bound join of <code>BusBookings</code> (where <code>BookingStatus = 'Confirmed'</code>) and <code>BusBookingPassengers</code> with a <strong>Unique Clustered Index</strong> on <code>(ScheduleId, SeatNo)</code>. This guarantees at the database engine level that no two active bookings can ever occupy the same seat on the same schedule, while still allowing a seat to be re-booked if an earlier booking is cancelled.</li>
+  </ul>
+
+  <h3>2.4 Enterprise Non-Functional Capabilities (NFRs)</h3>
+  <ul>
+    <li><strong>Rate Limiting (<code>Microsoft.AspNetCore.RateLimiting</code>):</strong>
+      <ul>
+        <li><code>fixed-general</code>: 100 requests per minute (Fixed Window).</li>
+        <li><code>sliding-search</code>: 60 requests per minute across 6 segments (Sliding Window) on <code>searchBus</code> / <code>searchBus2</code>.</li>
+        <li><code>token-booking</code>: 10-token bucket replenishing 1 token every 2 seconds on <code>PostBusBooking</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Caching (<code>HybridCache</code>):</strong> L1 in-memory cache with stampede protection for locations (60-min TTL) and bus search results (2-min TTL).</li>
+    <li><strong>Resilience (Polly v8 + EF Core Retry):</strong> Exponential backoff with jitter on transient failures and SQL Server retry-on-failure strategy.</li>
+    <li><strong>Observability (OpenTelemetry &amp; Serilog):</strong> Custom meter <code>BusBooking.Monitoring</code> tracking <code>bus_bookings_created_total</code>, <code>bus_seats_booked_total</code>, and <code>bus_booking_failures_total</code>, paired with structured Serilog console logging.</li>
+    <li><strong>Global Exception Handling (RFC 7807):</strong> Maps <code>ValidationException</code> -&gt; <code>400 Bad Request</code>, <code>NotFoundException</code> -&gt; <code>404 Not Found</code>, <code>SeatAlreadyBookedException</code> -&gt; <code>409 Conflict</code>, and unexpected exceptions -&gt; <code>500 Internal Server Error</code> with <code>traceId</code>.</li>
+  </ul>
+
+  <h3>2.5 Complete API Endpoints &amp; Role-Based Authorization (RBAC) Matrix</h3>
+
+  <h4>A. <code>AuthController</code> (Base Route: <code>/api/Auth</code> and <code>/api/v1/Auth</code>)</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Access / Roles</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="pill post">POST</span></td>
+        <td><code>/api/Auth/login</code></td>
+        <td><code>AllowAnonymous</code></td>
+        <td>Authenticates username &amp; password; returns signed JWT token &amp; user profile.</td>
+      </tr>
+      <tr>
+        <td><span class="pill post">POST</span></td>
+        <td><code>/api/Auth/AddNewUser</code></td>
+        <td><code>AllowAnonymous</code></td>
+        <td>Registers a new user account with BCrypt password hashing and role normalization.</td>
+      </tr>
+      <tr>
+        <td><span class="pill get">GET</span></td>
+        <td><code>/api/Auth/GetAllUsers</code></td>
+        <td><code>Admin, Manager</code></td>
+        <td>Returns all registered users (with passwords masked).</td>
+      </tr>
+      <tr>
+        <td><span class="pill post">POST</span></td>
+        <td><code>/api/Auth/UpdateUser</code></td>
+        <td><code>Authenticated</code></td>
+        <td>Updates user full name, email, role, and optionally re-hashes password.</td>
+      </tr>
+      <tr>
+        <td><span class="pill delete">DELETE</span></td>
+        <td><code>/api/Auth/DeleteUserByUserId?userId={id}</code></td>
+        <td><code>Admin</code></td>
+        <td>Permanently deletes a user account by ID.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>B. <code>BusBookingController</code> (Base Route: <code>/api/BusBooking</code> and <code>/api/v1/BusBooking</code>)</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Domain Area</th>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Access / Roles</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Vendors</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusVendors</code></td><td><code>Admin, Manager, Associate</code></td></tr>
+      <tr><td>Vendors</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusVendorsById?id={id}</code></td><td><code>Admin, Manager, Associate</code></td></tr>
+      <tr><td>Vendors</td><td><span class="pill post">POST</span></td><td><code>/api/BusBooking/PostBusVendor</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Vendors</td><td><span class="pill put">PUT</span></td><td><code>/api/BusBooking/PutBusVendors?id={id}</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Vendors</td><td><span class="pill delete">DELETE</span></td><td><code>/api/BusBooking/DeleteBusVendor?id={id}</code></td><td><code>Admin</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusLocations</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusLocationById?id={id}</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill post">POST</span></td><td><code>/api/BusBooking/PostBusLocation</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill put">PUT</span></td><td><code>/api/BusBooking/PutBusLocation?id={id}</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill delete">DELETE</span></td><td><code>/api/BusBooking/DeleteBusLocation?id={id}</code></td><td><code>Admin</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/getAddressByLocationId?locationid={id}</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Locations</td><td><span class="pill post">POST</span></td><td><code>/api/BusBooking/PostBusLocationAddress</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Schedules</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetAvailableRoutes</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Schedules</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusSchedules?vendorId={id}</code></td><td><code>Admin, Manager, Associate</code></td></tr>
+      <tr><td>Schedules</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusScheduleById?id={id}</code></td><td><code>Admin, Manager, Associate</code></td></tr>
+      <tr><td>Schedules</td><td><span class="pill post">POST</span></td><td><code>/api/BusBooking/PostBusSchedule</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Schedules</td><td><span class="pill put">PUT</span></td><td><code>/api/BusBooking/PutBusSchedule?id={id}</code></td><td><code>Admin, Manager</code></td></tr>
+      <tr><td>Schedules</td><td><span class="pill delete">DELETE</span></td><td><code>/api/BusBooking/DeleteBusSchedule?id={id}</code></td><td><code>Admin</code></td></tr>
+      <tr><td>Search</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/searchBus?fromLocation={f}&amp;toLocation={t}&amp;travelDate={d}</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Search</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/searchBus2?fromLocation={f}&amp;toLocation={t}&amp;travelDate={d}</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Bookings</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/getBookedSeats?shceduleId={id}</code></td><td><code>AllowAnonymous</code></td></tr>
+      <tr><td>Bookings</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetAllBusBookings?vendorId={id}</code></td><td><code>Admin, Manager, Associate</code></td></tr>
+      <tr><td>Bookings</td><td><span class="pill get">GET</span></td><td><code>/api/BusBooking/GetBusBooking?id={id}</code></td><td><code>Authenticated</code></td></tr>
+      <tr><td>Bookings</td><td><span class="pill post">POST</span></td><td><code>/api/BusBooking/PostBusBooking</code></td><td><code>Authenticated</code></td></tr>
+      <tr><td>Bookings</td><td><span class="pill delete">DELETE</span></td><td><code>/api/BusBooking/DeleteBusBooking?id={id}</code></td><td><code>Authenticated</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ====================================================================== -->
+  <!-- SECTION 3 -->
+  <!-- ====================================================================== -->
+  <h2>Section 3: Step-by-Step Instructions to Run the Application Locally</h2>
+
+  <h3>3.1 Machine Prerequisites</h3>
+  <ul>
+    <li><strong>.NET 10 SDK</strong> (v10.0.100 or newer) — Verify by running <code>dotnet --version</code> in PowerShell.</li>
+    <li><strong>Microsoft SQL Server</strong> (Developer, Express, or Enterprise Edition running locally on <code>localhost</code>) and <code>sqlcmd</code> utility.</li>
+    <li><strong>Windows PowerShell 5.1+</strong> or <strong>PowerShell 7+</strong>.</li>
+    <li><strong>IDE:</strong> Visual Studio 2022/2026, VS Code with C# Dev Kit, or JetBrains Rider.</li>
+  </ul>
+
+  <h3>3.2 Step 1 — Open PowerShell &amp; Navigate to the Workspace</h3>
+  <pre><code>cd C:\Projects\BusBookingApi</code></pre>
+
+  <h3>3.3 Step 2 — Verify Connection String &amp; JWT Settings</h3>
+  <p>Open <code>C:\Projects\BusBookingApi\src\BusBooking.Api\appsettings.json</code> and confirm the SQL Server instance name matches your local SQL Server installation:</p>
+  <pre><code>{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=BusBookingDb;Trusted_Connection=True;TrustServerCertificate=True;"
+  },
+  "JwtSettings": {
+    "Secret": "SuperSecretKeyForBusBookingApiMustBeAtLeast32BytesLong!",
+    "Issuer": "BusBookingApi",
+    "Audience": "BusBookingClient",
+    "ExpiryMinutes": 120
+  }
+}</code></pre>
+
+  <h3>3.4 Step 3 — Initialize &amp; Seed the SQL Server Database</h3>
+  <p>Run the DDL and seed script using <code>sqlcmd</code> (creates <code>BusBookingDb</code>, all 7 tables, covering indexes, the <code>dbo.vw_ActiveScheduleSeats</code> indexed view, sample locations, and vendors):</p>
+  <pre><code>sqlcmd -S localhost -E -i "C:\Projects\BusBookingApi\scripts\01_Initial_Schema_And_Covering_Indexes.sql"</code></pre>
+  <p>Alternatively, you can apply EF Core migrations directly:</p>
+  <pre><code>dotnet ef database update --project "src\BusBooking.Infrastructure\BusBooking.Infrastructure.csproj" --startup-project "src\BusBooking.Api\BusBooking.Api.csproj"</code></pre>
+
+  <h3>3.5 Step 4 — Build &amp; Run the Application</h3>
+  <p>Build the full solution and start the API server on port <code>5241</code>:</p>
+  <pre><code># 1. Build the solution
+dotnet build "C:\Projects\BusBookingApi\BusBooking.slnx"
+
+# 2. Start the Web API
+dotnet run --project "C:\Projects\BusBookingApi\src\BusBooking.Api\BusBooking.Api.csproj" --urls "http://localhost:5241"</code></pre>
+  <p>If setting up the database for the first time, seed the default <code>Admin</code>, <code>Manager</code>, and <code>Associate</code> accounts by running:</p>
+  <pre><code>powershell -ExecutionPolicy Bypass -File "C:\Projects\BusBookingApi\scripts\seed_users_via_api.ps1"</code></pre>
+
+  <h3>3.6 Step 5 — Using Swagger UI &amp; Default Seeded Role Credentials</h3>
+  <ol>
+    <li>Open your browser to <strong><code>http://localhost:5241/swagger</code></strong> (or <code>http://localhost:5241/</code>).</li>
+    <li>Use any of the default seeded accounts below to test Role-Based Access Control:</li>
+  </ol>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Email</th>
+        <th>Permitted Operations</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Admin</strong></td>
+        <td><code>admin</code></td>
+        <td><code>Admin@123</code></td>
+        <td><code>admin@busbooking.local</code></td>
+        <td>Full system access across all endpoints including all <code>DELETE</code> operations.</td>
+      </tr>
+      <tr>
+        <td><strong>Manager</strong></td>
+        <td><code>manager</code></td>
+        <td><code>Manager@123</code></td>
+        <td><code>manager@busbooking.local</code></td>
+        <td>View users; create, update, and view vendors, locations, and schedules.</td>
+      </tr>
+      <tr>
+        <td><strong>Associate</strong></td>
+        <td><code>associate</code></td>
+        <td><code>Associate@123</code></td>
+        <td><code>associate@busbooking.local</code></td>
+        <td>View vendors, schedules, and bookings; create/cancel customer bookings.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout success">
+    <strong>How to Authorize in Swagger UI:</strong>
+    <ol>
+      <li>Expand <code>POST /api/Auth/login</code>, click <strong>Try it out</strong>, and execute with <code>{ "userName": "admin", "password": "Admin@123" }</code>.</li>
+      <li>Copy the JWT string from <code>data.token</code> in the response body.</li>
+      <li>Click the <strong>Authorize</strong> button at the top right of Swagger UI.</li>
+      <li>Paste your token in the <strong>Value</strong> box (works with either raw <code>&lt;token&gt;</code> or <code>Bearer &lt;token&gt;</code>) and click <strong>Authorize</strong>.</li>
+      <li>Execute protected endpoints such as <code>GET /api/Auth/GetAllUsers</code> or <code>GET /api/BusBooking/GetBusVendors</code>.</li>
+    </ol>
+  </div>
+
+  <h3>3.7 Step 6 — Running the Automated PowerShell Verification Suite</h3>
+  <p>Stop any manually running <code>BusBooking.Api</code> process, then run the automated test scripts from PowerShell:</p>
+  <pre><code># Run full 8-step Swagger, Authentication &amp; RBAC verification suite
+powershell -ExecutionPolicy Bypass -File "C:\Projects\BusBookingApi\scripts\test_auth_and_swagger.ps1"
+
+# Run quick Admin login verification
+powershell -ExecutionPolicy Bypass -File "C:\Projects\BusBookingApi\scripts\verify_admin_login.ps1"
+
+# Run health checks (/health/live, /health/ready) &amp; locations verification
+powershell -ExecutionPolicy Bypass -File "C:\Projects\BusBookingApi\scripts\test_full_system.ps1"</code></pre>
+
+  <h3>3.8 Step 7 — Troubleshooting Guide for New Engineers</h3>
+  <div class="callout warn">
+    <ul>
+      <li><strong>Build Error (<code>BusBooking.Api.exe is locked by another process</code>):</strong> Stop the running API process before compiling:<br/>
+        <code>Get-Process -Name "BusBooking.Api" -ErrorAction SilentlyContinue | Stop-Process -Force</code>
+      </li>
+      <li><strong>PowerShell 5.1 <code>Invoke-WebRequest</code> Hanging:</strong> Always include <code>-UseBasicParsing</code> when using <code>Invoke-WebRequest</code> in Windows PowerShell 5.1 so it does not invoke the legacy Internet Explorer MSHTML DOM parser.</li>
+      <li><strong>Swagger UI <code>401 Unauthorized</code> After Restart:</strong> Press <code>Ctrl+F5</code> in your browser to ensure Swagger UI reloads the latest <code>/swagger/v1/swagger.json</code> security definition.</li>
+    </ul>
+  </div>
+
+</body>
+</html>
